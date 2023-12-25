@@ -1,0 +1,44 @@
+/*Sử dụng LED màu RGB, viết chương trình bấm BIl, lần 1 đèn R sáng, lần 2 đèn R tắt đen G sáng. lần 3 đèn G
+tắt đèn B sáng, lặp đi lặp lại liên tục. Trong lúc đang làm các tác vụ kệ trên thị dòng chữ hello-world chạy từ trái sang phải trên màn hình (trOng timer)
+/*
+
+#include <io.h>
+#include <delay.h>
+
+#define BT1 PINB.0
+#define BT2 PINB.2
+#define BT3 PINB.3
+#define RED PORTD.4
+#define GREEN PORTD.5
+#define BLUE PORTD.6
+
+
+void main(void)
+{
+DDRB = 0x00;    
+PORTB = 0x0D;   //0b0000 1101
+DDRD = 0x70;    //0b0111 0000
+PORTD = 0x00;   
+while (1)
+    {
+        if(BT1 == 0) {
+            RED = 1;
+            GREEN = 0;
+            BLUE = 0;
+            delay_ms(250);
+        }           
+        if(BT2 == 0) {    
+            RED = 0;
+            GREEN = 1;
+            BLUE = 0;  
+            delay_ms(250);
+        }
+        if(BT3 == 0) {
+            RED = 0;
+            GREEN = 0;
+            BLUE = 1;  
+             delay_ms(250);
+        }
+
+    }
+}

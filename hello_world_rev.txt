@@ -1,0 +1,78 @@
+/*Viết chương trình bấm phím CT dòng chữ "hello-world" chạy từng ký tự từ   phải sang trai trên màn hinh LCD, bấm CT2 thì dòng chữ trên chạy ngược lại, bấm CT3 thì xoá màn hình. (Trong lúc chữ chạy bẩm CT bất kỳ thì phải tiện thụ hiện nút bẩm)
+/*
+#include <io.h>
+#include <alcd.h>
+#include <delay.h>
+
+#define BT1 PINB.2
+#define BT2 PINB.3
+#define BT3 PINB.0 
+#define BL PORTD.7
+#define bam 0
+
+int i=0;
+int bt1(void);
+int bt2(void);
+int bt3(void);
+
+int bt1 (void) {
+    while(1){
+        for(i=0;i<=16;i++){
+            if(BT2 == 0 || BT3 == 0) {
+                return 0;
+            }            
+            
+            lcd_clear();
+            lcd_gotoxy(i,1);
+            lcd_putsf("Hello_world");
+            
+            delay_ms(50);
+        }
+    }
+}
+
+int bt2 (void) {
+    while(1){
+        for(i=15;i>=0;i--){
+            if(BT1 == 0 || BT3 == 0) {
+                return 0;
+            }            
+            
+            lcd_clear();
+            lcd_gotoxy(i,1);
+            lcd_putsf("Hello_world");
+            
+            delay_ms(50);
+        }
+    }
+}
+
+
+int bt3 (void) {
+    lcd_clear();
+    return 0;
+}
+
+void main(void)
+{
+DDRB = 0x00;
+PORTB = 0x0D;
+DDRD = 0x80;
+PORTD = 0x80;
+PORTB.2 = 1;
+PORTB.3 = 1;
+PORTB.0 = 1;
+
+lcd_init(16);
+lcd_clear();
+lcd_gotoxy(0,1);
+lcd_putsf("Hello_world");
+
+while (1)
+    {
+    if(BT1 == 0) {bt1();}
+    if(BT2 == 0) {bt2();}
+    if(BT3 == 0) {bt3();}
+
+    }
+}

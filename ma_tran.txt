@@ -1,0 +1,97 @@
+/*Viết chương trình quét ma trận phím 3x3 và hiển thị số thứ tự phím lên LCD.
+
+Chương trình đếm và hiển thị các số từ l1,00 đê số 99,99, các số sau dấu phẩy thay đổi theo chu kỳ 01*/
+#include <io.h>
+#include <delay.h>
+#include <math.h>
+
+void display(int i){ 
+    i = i%10;
+    if(i==0){ 
+        PORTF = 0x80; 
+        PORTD = 0xF9; 
+        PORTA = 0x7F; 
+    } else if(i==1){ 
+        PORTF = 0x86; 
+        PORTD = 0xFF; 
+        PORTA = 0x7F; 
+    } else if(i==2){ 
+        PORTF = 0x84; 
+        PORTD = 0xF1; 
+        PORTA = 0xFF; 
+    } else if(i==3){ 
+        PORTF = 0x84; 
+        PORTD = 0xF5; 
+        PORTA = 0x7F; 
+    } else if(i==4){ 
+        PORTF = 0x82; 
+        PORTD = 0xF7; 
+        PORTA = 0x7F; 
+    } else if(i==5){ 
+        PORTF = 0xA0; 
+        PORTD = 0xF5; 
+        PORTA = 0x7F; 
+    } else if(i==6){ 
+        PORTF = 0xA0;  
+        PORTD = 0xF1; 
+        PORTA = 0x7F; 
+    } else if(i==7){ 
+        PORTF = 0x84; 
+        PORTD = 0xFF; 
+        PORTA = 0x7F; 
+    } else if(i==8){ 
+        PORTF = 0x80; 
+        PORTD = 0xF1; 
+        PORTA = 0x7F; 
+    } else if(i==9){ 
+        PORTF = 0x80; 
+        PORTD = 0xF5; 
+        PORTA = 0x7F; 
+    } 
+} 
+
+void displayLED(int led) {
+    if (led == 1) {
+        PORTF |= 0b00000001;
+    } else if (led == 2) {
+        PORTF |= 0b00001000;
+        PORTF &= 0b01111111;
+    } else if (led == 3) {
+        PORTF |= 0b00010000;
+    } else if (led == 4) {
+        PORTF |= 0b01000000;
+    }
+}
+
+void undisplayLED(int led) {
+    if (led == 1) {
+        PORTF &= 0b11111110;
+    } else if (led == 2) {
+        PORTF &= 0b11110111;
+        PORTF |= 0b10000000;
+    } else if (led == 3) {
+        PORTF &= 0b11101111;
+    } else if (led == 4) {
+        PORTF &= 0b10111111;
+    }
+}
+void main() { 
+    int count = 1100;
+    int led;  
+    
+    DDRF = 0xFF;
+    DDRA.7 = 1;
+    DDRD = 0b00001110;
+                          
+    while(1) {
+        for (led = 1; led <= 4; led++) {
+            display(count/pow(10,4-led));
+            displayLED(led);
+            delay_ms(100);
+            undisplayLED(led);        
+        }
+        count++; 
+        if (count > 9999) count = 1100;
+    }
+}
+

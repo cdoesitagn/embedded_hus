@@ -1,0 +1,10 @@
+VERSION:3 SOURCE_TIMESTAMP:559D7DD8
+NODE:I LEVEL:0 LINE:1 "G:\Lap trinh nhung\robot_new\Code_vison_32\inc\io.h"
+NODE:I LEVEL:0 LINE:2 "G:\Lap trinh nhung\robot_new\Code_vison_32\inc\alcd.h"
+NODE:I LEVEL:0 LINE:3 "G:\Lap trinh nhung\robot_new\Code_vison_32\inc\delay.h"
+NODE:M LEVEL:0 LINE:5 "PIN_DHT"
+NODE:M LEVEL:0 LINE:6 "PORT_DHT"
+NODE:M LEVEL:0 LINE:7 "DDR_DHT"
+NODE:V LEVEL:0 LINE:9 "data -> RAM:????"
+NODE:V LEVEL:0 LINE:10 "checksum -> R4,R5"
+NODE:F LEVEL:0 LINE:12 "dht11(unsigned char * nhietdo,unsigned char * doam)"

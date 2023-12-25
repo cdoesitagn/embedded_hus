@@ -1,0 +1,6 @@
+/*Thiết kế thang máy cho nhà 5 tầng thực hiện các chức năng sau (BTI lên, BT2 xuống (ở ngoài thang máy), các phim 1-2-3-4-5 tương ứng với số tầng. 6 –mở, 7 đóng, 8 - khẩn cấp); Hiển thị số tầng lên LCD/GLCD/LED 7 đoạn.
+
+Khi bấm cửa thang nào thi động cơ servo sẽ xoay từ góc 0-90 độ (chú ý khi đang ở tầng bất kỳ không trùng với tầng tương ứng với phím bấm thi quay động cơ để về tầng tương ứng) nếu số tầng bấm nhỏ hơn số tầng đang phục vụ thì động cơ quay chiều kim đồng hồ, số đếm giảm. Nếu số tầng bấm lớn hơn số tầng đang phục vụ thì động cơ quay chiều ngược lại và số đếm tăng. Khi số đếm bằng số tầng được bẩm, thi động cơ dừng lại
+
+Sau khi động cơ servo quay sang góc 90 độ thì ding lại trong vòng 2s rồi lại quay về góc 0 độ. nếu số tầng bẩm cao hơn số tầng hiện tại thì động cơ quay ngược kim đồng hồ và số đếm tăng; nếu số tầng nhỏ hơn tầng hiện tại thì động cơ quay theo chiều kim đồng hồ và số đếm giảm. số đếm tăng hoặc giảm khi bằng số bấm thì động cơ dừng lại, servo quay về góc 90 độ trong 2s và lại quay về góc 0 độ. Quá trình này lặp đi lặp lại.
+*/

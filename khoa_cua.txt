@@ -1,0 +1,189 @@
+#include <io.h>
+#include <delay.h>
+#include <glcd.h>
+#include <font5x7.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <eeprom.h>
+
+// macro for easier usage
+#define read_eeprom_word(address) eeprom_read_word ((const unsigned int*)address)
+#define write_eeprom_word(address,value) eeprom_write_word ((unsigned int*)address,(unsigned int)value)
+#define update_eeprom_word(address,value) eeprom_update_word ((unsigned int*)address,(unsigned int)value)
+unsigned int EEMEM my_eeprom;
+
+int keypad[3][3] = {1,2,3,4,5,6,7,8,9}; //keypad: Mảng 2 chiều chứa giá trị của bàn phím ma trận 3x3.
+char tmp[10]; //tmp: Mảng ký tự dùng để chứa giá trị tạm thời.
+int miss = 0; miss: Biến kiểu số nguyên dùng để đếm số lần nhập sai mật khẩu.
+int counter = 0; //counter: Biến kiểu số nguyên dùng để đếm và điều khiển các trạng thái của LED.
+
+//Hàm ngắt tràn Timer 0 với chu kỳ 1 ms.ngắt xảy ra khi Timer 0 tràn, được sử dụng để điều khiển đèn LED nhấp nháy theo một mẫu nhất định.
+interrupt [TIM0_OVF] void timer0_ovf_isr(void)
+{
+    TCNT0=0x06;
+    // Place your code here
+    if (miss >= 3) {
+        if (counter == 2000)
+            counter  = 0;
+    
+        if (counter == 0) {
+            PORTD.4 = 0;
+            PORTD.5 = 1;
+        }
+        
+        if (counter == 1000) {
+            PORTD.5 = 0;
+            PORTD.4 = 1;
+        }
+        counter++;
+    }
+    else {
+        PORTD.4 = 0;
+        PORTD.5 = 0;
+    }       
+}
+
+
+// Hàm đọc giá trị từ bàn phím: Tác dụng: Hàm này đọc giá trị từ bàn phím ma trận 3x3 và trả về giá trị tương ứng. Nếu không có phím nào được nhấn, hàm sẽ trả về -1.
+int read() {
+    char a, i, j;
+    for(j = 0; j < 3; j++ ){
+        if (j == 0) PORTF = 0b11111101;
+        if (j == 1) PORTF = 0b11110111;
+        if (j == 2) PORTF = 0b11011111;
+        for(i = 0; i < 3; i++){
+            if (i == 0){
+                a = PINF&0x04;
+                if(a != 0x04)
+                    return keypad[i][j];
+            }
+            if (i == 1){
+                a = PINF&0x10;
+                if (a != 0x10)
+                    return keypad[i][j];
+            }
+            if (i == 2){
+                a = PINF&0x01;
+                if (a != 0x01)
+                    return keypad[i][j];
+            }
+        }
+    }
+    return -1;
+}
+
+// Function to display the main screen on GLCD
+// tác dụng: Hiển thị màn hình chính trên GLCD, Nó xóa màn hình, sau đó in các chuỗi ký tự được cung cấp lên màn hình tại các vị trí cụ thể. Nếu được cung cấp một giá trị mật khẩu hợp lệ, nó sẽ hiển thị mật khẩu đó trên màn hình.
+void mainScreen(unsigned char * c, int pass) {
+    glcd_clear();
+    glcd_outtextxy(15, 20, c);
+    if (pass != -1) {
+        itoa(pass, tmp);
+        glcd_outtextxy(30, 30, tmp);
+    }
+}
+
+// Function to execute the main program
+// tác dụng: Thực thi chương trình chính, yêu cầu nhập mật khẩu, Nếu mật khẩu nhập vào không đúng, chương trình sẽ thông báo và yêu cầu nhập lại. Nếu nhập sai 3 lần liên tiếp, một role sẽ được kích hoạt. Khi mật khẩu đúng được nhập vào, chương trình sẽ hiển thị thông báo "PASSED".
+
+
+void exe() {
+    unsigned int input_times = 0, input = -1, pass = 0, require = 666, reader;
+    reader = read_eeprom_word(&my_eeprom);
+    if (reader >= 100 && reader <= 999)
+        require = reader;   
+    
+    while (pass != require) {
+        mainScreen("PASSWORD?", -1);
+        while (input_times != 3) {
+            input = read();
+            delay_ms(200);
+            if (input != -1) {
+                input_times++;
+                pass = pass * 10 + input;
+                mainScreen("PASSWORD?", pass);
+                input = -1;
+            }
+        }
+        
+        if (pass != require) {
+            glcd_clear();
+            glcd_outtextxy(15, 20, "NO?");
+            input_times = 0;
+            input = -1;
+            pass = 0;
+            delay_ms(800);
+        }
+        miss++;
+        // turn on role 1
+        if (miss == 3) {
+            DDRC.3 = 1;
+            PORTC.3 = 1;
+        }
+            
+    }
+    
+    miss = 0; 
+    delay_ms(500);
+    glcd_clear();
+    PORTC.3 = 0;
+    glcd_outtextxy(15, 20, "PASSED"); 
+}
+
+void main(void) //Hàm chính của chương trình: Trong hàm này, các thiết bị như GLCD, bàn phím, đèn LED, Timer 0 và EEPROM được khởi tạo. Sau đó, hàm exe được gọi để thực hiện chương trình chính.
+{
+    unsigned int pass = 0, input, input_times = 0;
+    //init GLCD
+```c
+    glcd_init(ON);
+    glcd_clear();
+    glcd_setfont(font5x7, 5, 7, 32);
+    
+    //init keypad
+    DDRF = 0x00;
+    PORTF = 0b11111111;
+    
+    //init LED
+    DDRD.4 = 1;
+    DDRD.5 = 1;
+    
+    //init Timer 0
+    TCCR0 = 0x05;
+    TCNT0 = 0x06;
+    TIMSK = 0x01;
+    
+    //init EEPROM
+    pass = read_eeprom_word(&my_eeprom);
+    if (pass < 100 || pass > 999) {
+        pass = 123;
+        write_eeprom_word(&my_eeprom, pass);
+    }
+    
+    exe();
+    
+    while (1)
+    {
+        // Change password
+        mainScreen("NEW PASS?", -1);
+        while (input_times != 3) {
+            input = read();
+            delay_ms(200);
+            if (input != -1) {
+                input_times++;
+                pass = pass * 10 + input;
+                mainScreen("NEW PASS?", pass);
+                input = -1;
+            }
+        }
+        
+        write_eeprom_word(&my_eeprom, pass);
+        update_eeprom_word(&my_eeprom, pass);
+        delay_ms(500);
+        
+        glcd_clear();
+        glcd_outtextxy(15, 20, "SAVED");
+        delay_ms(500);
+        
+        exe();
+    }
+}

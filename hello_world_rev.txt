@@ -1,0 +1,159 @@
+#include <io.h>
+#include <alcd.h>
+#include <delay.h>
+
+#define BT1 PINB.2
+#define BT2 PINB.3
+#define BT3 PINB.0 
+#define BL PORTD.7
+#define bam 0
+
+int i=0;
+int bt1(void);
+int bt2(void);
+int bt3(void);
+
+//3 hàm bt1-bt3 giống bài hello world
+
+int bt1 (void) {
+    while(1){
+        for(i=0;i<=16;i++){
+            if(BT2 == 0 || BT3 == 0) {
+                return 0;
+            }            
+            
+            lcd_clear();
+            lcd_gotoxy(i,1);
+            lcd_putsf("Hello_world");
+            
+            delay_ms(50);
+        }
+    }
+}
+
+int bt2 (void) {
+    while(1){
+        for(i=15;i>=0;i--){
+            if(BT1 == 0 || BT3 == 0) {
+                return 0;
+            }            
+            
+            lcd_clear();
+            lcd_gotoxy(i,1);
+            lcd_putsf("Hello_world");
+            
+            delay_ms(50);
+        }
+    }
+}
+
+
+int bt3 (void) {
+    lcd_clear();
+    return 0;
+}
+
+void main(void)
+{
+    // Khởi tạo các chân I/O
+    DDRB = 0x00;
+    PORTB = 0x0D;
+    DDRD = 0x80;
+    PORTD = 0x80;
+    PORTB.2 = 1;
+    PORTB.3 = 1;
+    PORTB.0 = 1;
+
+    // Khởi tạo màn hình LCD
+    lcd_init(16);
+    lcd_clear();
+    lcd_gotoxy(0,1);
+    lcd_putsf("Hello_world");
+
+    while (1)
+    {
+        // Kiểm tra các nút bấm
+        if(BT1 == 0) {bt1();}
+        if(BT2 == 0) {bt2();}
+        if(BT3 == 0) {bt3();}
+    }
+}#include <io.h>
+#include <alcd.h>
+#include <delay.h>
+
+#define BT1 PINB.2
+#define BT2 PINB.3
+#define BT3 PINB.0 
+#define BL PORTD.7
+#define bam 0
+
+int i=0;
+int bt1(void);
+int bt2(void);
+int bt3(void);
+
+int bt1 (void) {
+    while(1){
+        for(i=0;i<=16;i++){
+            if(BT2 == 0 || BT3 == 0) {
+                return 0;
+            }            
+            
+            lcd_clear();
+            lcd_gotoxy(i,1);
+            lcd_putsf("Hello_world");
+            
+            delay_ms(50);
+        }
+    }
+}
+
+int bt2 (void) {
+    while(1){
+        for(i=15;i>=0;i--){
+            if(BT1 == 0 || BT3 == 0) {
+                return 0;
+            }            
+            
+            lcd_clear();
+            lcd_gotoxy(i,1);
+            lcd_putsf("Hello_world");
+            
+            delay_ms(50);
+        }
+    }
+}
+
+
+int bt3 (void) {
+    lcd_clear();
+    return 0;
+}
+
+
+// hàm này Hàm main() khởi tạo chân I/O và màn hình LCD, sau đó trong vòng lặp vô hạn, kiểm tra trạng thái của các nút bấm và gọi các hàm tương ứng.
+void main(void)
+{
+    // Khởi tạo các chân I/O
+    DDRB = 0x00;
+    PORTB = 0x0D;
+    DDRD = 0x80;
+    PORTD = 0x80;
+    PORTB.2 = 1;
+    PORTB.3 = 1;
+    PORTB.0 = 1;
+
+    // Khởi tạo màn hình LCD
+    lcd_init(16);
+    lcd_clear();
+    lcd_gotoxy(0,1);
+    lcd_putsf("Hello_world");
+
+    while (1)
+    {
+        // Kiểm tra các nút bấm
+        if(BT1 == 0) {bt1();}
+        if(BT2 == 0) {bt2();}
+        if(BT3 == 0) {bt3();}
+    }
+}

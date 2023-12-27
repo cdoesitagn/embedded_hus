@@ -1,0 +1,91 @@
+/*Viết chương trình bấm phím CT dòng chữ "hello-world" chạy từng ký tự từ trái sang phải trên màn hinh LCD, bấm CT2 thì dòng chữ trên chạy ngược lại, bấm CT3 thì xoá màn hình. (Trong lúc chữ chạy bẩm CT bất kỳ thì phải tiện thụ hiện nút bẩm)
+/*
+#include <io.h>
+#include <alcd.h>
+#include <delay.h>
+#define CT_1 PINB.2
+#define CT_2 PINB.3
+#define CT_3 PINB.0
+#define BL PORTD.7
+#define bam 0
+
+int i;
+int j;
+void ct1(void);
+void ct2(void);
+void ct3(void);
+char data[] = {'H','e','l','l','o','_','w','o','r','l','d'};
+char space =' ';
+void main(void){
+DDRB = 0x00;
+PORTB = 0x0D;
+DDRD = 0x80;
+PORTD = 0x80;
+
+PORTB.2=1;
+PORTB.3=1;
+PORTB.0=1;
+lcd_init(16);
+  while(1){  
+    if(CT_1 ==  0){
+   ct1();
+          
+    }
+    if(CT_2 ==  0){
+   ct2();
+    }
+
+    if(CT_3 == 0){
+   ct3();
+    }
+    }
+}    // Hàm chính của chương trình.
+void ct1 (void) {
+    int max = 16;
+    lcd_clear();
+    lcd_gotoxy(max,1);
+    for(i = 10; i >= 0; i--){
+        if(CT_2  == 0|| CT_3 == 0){
+            break;
+        }
+        for(j = 0; j < max-1; j++){
+            if(CT_2  == 0|| CT_3 == 0){
+            break;
+            }    
+            lcd_gotoxy(j, 1);
+            lcd_putchar(space);
+            lcd_putchar(data[i]);
+            delay_ms(100);
+        }
+        lcd_gotoxy(max-1,1);
+        lcd_putchar(data[i]);
+        max = max-1;
+    }
+}    // Hiển thị dòng chữ "Hello world" chạy từ trái sang phải trên màn hình LCD.
+ 
+void ct2(void){
+    int min = 0;
+    lcd_clear();
+    lcd_gotoxy(0,1);
+    for(i = 0; i <= 10; i++){
+        if(CT_1  == 0|| CT_3 == 0){ 
+            break;
+        }
+        for(j = 15 ; j >= min ; j--){
+            if(CT_1  == 0|| CT_3 == 0){
+                break;
+            }   
+            lcd_gotoxy(j, 1);
+            lcd_putchar(data[i]);
+            lcd_putchar(space);
+            delay_ms(100);
+        }
+        lcd_gotoxy(min,1);
+        lcd_putchar(data[i]);
+        min = min + 1;
+    }
+}    // Hiển thị dòng chữ "Hello world" chạy từ phải sang trái trên màn hình LCD.
+void ct3(void){
+       lcd_clear();
+       
+}    // Xoá màn hình LCD.
